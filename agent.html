@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Champions</title>
+</head>
+<body>
+    <h1>Champions</h1>
+
+    <form id="addChampionForm">
+        <label for="name">Nom du Champion:</label><br>
+        <input type="text" id="name" name="name"><br>
+        <label for="type">Type du Champion:</label><br>
+        <input type="text" id="type" name="type"><br>
+        <input type="submit" value="Ajouter">
+    </form>
+
+    <h2>Liste des Champions</h2>
+    <ul id="championsList"></ul>
+
+    <script>
+        document.getElementById('addChampionForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            let name = document.getElementById('name').value;
+            let type = document.getElementById('type').value;
+
+            fetch('http://localhost:3000/champions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: name, type: type }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                getChampionsList();
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+
+        function getChampionsList() {
+            fetch('http://localhost:3000/champions')
+            .then(response => response.json())
+            .then(data => {
+                let championsList = document.getElementById('championsList');
+                championsList.innerHTML = '';
+                data.forEach(champion => {
+                    let championElement = document.createElement('li');
+                    championElement.textContent = `Nom: ${champion.name}, Type: ${champion.type}`;
+                    championsList.appendChild(championElement);
+                });
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        getChampionsList();
+    </script>
+</body>
+</html>
